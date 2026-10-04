@@ -23,4 +23,4 @@ fixed-capacity containers, filters, statistics, and threshold detection.
 | RingBuffer | Beginner | done |
 | Statistics | Beginner | done |
 | MovingAverage | Intermediate | done |
-| ThresholdDetector | Intermediate | planned |
+| ThresholdDetector | Intermediate | done |
