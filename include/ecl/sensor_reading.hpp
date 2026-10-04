@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include <ecl/detail/finite.hpp>
+
 namespace ecl {
 
 /// One timestamped measurement from a sensor.
@@ -22,9 +24,9 @@ public:
 
     constexpr SensorReading(Value value, Timestamp timestamp_ms,
                             bool valid = true) noexcept
-        : value_{valid && is_finite(value) ? value : Value{0}},
+        : value_{valid && detail::is_finite(value) ? value : Value{0}},
           timestamp_ms_{timestamp_ms},
-          valid_{valid && is_finite(value)} {}
+          valid_{valid && detail::is_finite(value)} {}
 
     /// An invalid reading that still remembers when it was taken.
     [[nodiscard]] static constexpr SensorReading invalid(
@@ -49,8 +51,6 @@ public:
     }
 
 private:
-    // x - x is 0 for every finite x, and NaN for NaN and +/- infinity.
-    static constexpr bool is_finite(Value x) noexcept { return x - x == Value{0}; }
 
     Value value_{0};
     Timestamp timestamp_ms_{0};

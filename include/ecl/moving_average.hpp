@@ -4,6 +4,7 @@
 #include <optional>
 #include <type_traits>
 
+#include <ecl/detail/finite.hpp>
 #include <ecl/ring_buffer.hpp>
 #include <ecl/sensor_reading.hpp>
 
@@ -37,7 +38,7 @@ public:
 
     /// Adds a sample. Returns false (and ignores it) if it is not finite.
     bool add(T value) noexcept {
-        if (!is_finite(value)) {
+        if (!detail::is_finite(value)) {
             return false;
         }
         if (samples_.full()) {
@@ -85,8 +86,6 @@ public:
     }
 
 private:
-    // x - x is 0 for every finite x, and NaN for NaN and +/- infinity.
-    static constexpr bool is_finite(T x) noexcept { return x - x == T{0}; }
 
     // Recomputes the sum exactly from the window contents.
     void resync() noexcept {

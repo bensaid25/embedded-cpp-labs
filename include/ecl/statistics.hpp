@@ -5,6 +5,7 @@
 #include <optional>
 #include <type_traits>
 
+#include <ecl/detail/finite.hpp>
 #include <ecl/sensor_reading.hpp>
 
 namespace ecl {
@@ -32,7 +33,7 @@ public:
 
     /// Adds a sample. Returns false (and ignores it) if it is not finite.
     bool add(T value) noexcept {
-        if (!is_finite(value)) {
+        if (!detail::is_finite(value)) {
             return false;
         }
         if (count_ == 0) {
@@ -94,8 +95,6 @@ public:
     void reset() noexcept { *this = Statistics{}; }
 
 private:
-    // x - x is 0 for every finite x, and NaN for NaN and +/- infinity.
-    static constexpr bool is_finite(T x) noexcept { return x - x == T{0}; }
 
     size_type count_{0};
     T min_{0};
