@@ -20,7 +20,7 @@ fixed-capacity containers, filters, statistics, and threshold detection.
 | Module | Level | Status |
 |---|---|---|
 | SensorReading | Beginner | done |
-| RingBuffer | Beginner | planned |
+| RingBuffer | Beginner | done |
 | Statistics | Beginner | planned |
 | MovingAverage | Intermediate | planned |
 | ThresholdDetector | Intermediate | planned |
