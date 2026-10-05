@@ -2,3 +2,5 @@ build/
 .vscode/
 *.o
 build-*/
+sdkconfig
+sdkconfig.old
