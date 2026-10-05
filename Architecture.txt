@@ -4,18 +4,18 @@ Architecture
 
 embedded-cpp-labs/
 ├── include/ecl/              # public headers, one per module
-│   ├── sensor_reading.hpp
-│   ├── ring_buffer.hpp
-│   ├── statistics.hpp
-│   ├── moving_average.hpp
+│   ├── sensor_reading.hpp    ************************************************************
+│   ├── ring_buffer.hpp       ************************************************************
+│   ├── statistics.hpp        ************************************************************
+│   ├── moving_average.hpp    ************************************************************
 │   └── threshold_detector.hpp
 ├── src/                      # only for non-template code (may stay nearly empty)
 ├── tests/
 │   ├── CMakeLists.txt
-│   ├── test_sensor_reading.cpp
-│   ├── test_ring_buffer.cpp
-│   ├── test_statistics.cpp
-│   ├── test_moving_average.cpp
+│   ├── test_sensor_reading.cpp************************************************************
+│   ├── test_ring_buffer.cpp************************************************************
+│   ├── test_statistics.cpp************************************************************
+│   ├── test_moving_average.cpp************************************************************
 │   └── test_threshold_detector.cpp
 ├── examples/
 │   ├── host/                 # runs on your laptop, no hardware needed
@@ -35,8 +35,8 @@ embedded-cpp-labs/
 │   └── ci.yml                # host build + tests + sanitizers + cross-compile
 ├── .clang-format
 ├── .clang-tidy
-├── .gitignore
-├── CMakeLists.txt
+├── .gitignore************************************************************
+├── CMakeLists.txt************************************************************
 ├── CHANGELOG.md
-├── LICENSE
-└── README.md
+├── LICENSE************************************************************
+└── README.md************************************************************
