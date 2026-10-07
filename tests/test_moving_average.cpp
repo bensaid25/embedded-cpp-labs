@@ -143,7 +143,7 @@ TEST(MovingAverage, MatchesABruteForceAverageOverALongRun) {
         const std::size_t count = n + 1 < kWindow ? n + 1 : kWindow;
         double sum = 0.0;
         for (std::size_t k = 0; k < count; ++k) {
-            sum += history[n - k];
+            sum += static_cast<double>(history[n - k]);
         }
         EXPECT_NEAR(ma.value().value(), sum / static_cast<double>(count), 1e-3)
             << "at sample " << n;

@@ -141,7 +141,8 @@ The simulation is single-threaded and deterministic. The real two-thread version
 - **Power-of-two capacity.** Indices wrap with a bit mask instead of a division, because many small cores have no hardware divider. A wrong capacity is a compile error.
 - **Sensors are a compile-time contract, not a base class.** Any type with `read(now_ms)` works, so the call can be inlined and no vtable is stored in flash. The caller owns the clock, so a driver has no hidden time dependency.
 - **A deterministic mock sensor.** Tests and demos inject spikes, failed reads and NaN on a schedule, so every edge case is reproducible.
-- **One shared finite check.** `detail::is_finite` uses `x - x == 0`, which is `constexpr` in C++17. It assumes IEEE semantics, so it is not reliable under `-ffast-math`.
+- **One shared finite check.** `detail::is_finite` compares against `numeric_limits<T>::max()`, which is `constexpr` in C++17 and fails for NaN and both infinities. Like any NaN test, it is not reliable under `-ffast-math`.
+- **Not thread-safe.** None of the containers or filters may be shared between an interrupt handler and the main code without external protection. A lock-free single-producer, single-consumer buffer for that case is on the roadmap.
 
 ## Build and test
 
