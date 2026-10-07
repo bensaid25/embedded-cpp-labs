@@ -7,6 +7,7 @@
 #include <cstdio>
 
 #include <ecl/sensor_reading.hpp>
+#include <ecl/threshold_detector.hpp>
 #include <vibration_pipeline.hpp>
 
 namespace {

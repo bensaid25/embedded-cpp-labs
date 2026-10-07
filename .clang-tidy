@@ -1,21 +1,23 @@
-# Static analysis for the library headers (and the tests/examples that use them).
-# Run locally:  cmake -S . -B build && clang-tidy -p build tests/test_spsc_queue.cpp
+# Static analysis for the library headers, the shared pipeline and the host
+# examples. Run it on tests/header_check.cpp: that file instantiates every
+# template, so every member function is analysed.
 Checks: >
   -*,
   bugprone-*,
-  concurrency-*,
-  cert-*,
-  performance-*,
-  misc-*,
-  modernize-use-nodiscard,
-  modernize-use-override,
-  modernize-use-using,
-  readability-container-size-empty,
-  readability-redundant-*,
   -bugprone-easily-swappable-parameters,
+  cert-*,
+  clang-analyzer-*,
+  cppcoreguidelines-init-variables,
+  cppcoreguidelines-pro-type-member-init,
+  cppcoreguidelines-narrowing-conversions,
+  misc-*,
   -misc-non-private-member-variables-in-classes,
   -misc-include-cleaner,
-  -cert-err58-cpp
-# Only report problems found in OUR headers, never in GoogleTest or the standard library.
-HeaderFilterRegex: 'include/ecl/.*'
-WarningsAsErrors: ''
+  modernize-use-nodiscard,
+  modernize-use-noexcept,
+  performance-*,
+  readability-container-size-empty,
+  readability-else-after-return,
+  readability-implicit-bool-conversion
+WarningsAsErrors: '*'
+HeaderFilterRegex: 'include/ecl/.*|examples/common/.*'

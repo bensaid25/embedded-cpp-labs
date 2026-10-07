@@ -79,9 +79,9 @@ int main() {
 
     std::printf("\nraw readings: %zu valid\n", raw_stats.count());
     std::printf("  min  %.2f\n  max  %.2f\n  mean %.2f\n  rms  %.2f\n",
-                static_cast<double>(raw_stats.min().value()),
-                static_cast<double>(raw_stats.max().value()),
-                static_cast<double>(raw_stats.mean().value()),
-                static_cast<double>(raw_stats.rms().value()));
+                static_cast<double>(raw_stats.min().value_or(0.0f)),
+                static_cast<double>(raw_stats.max().value_or(0.0f)),
+                static_cast<double>(raw_stats.mean().value_or(0.0f)),
+                static_cast<double>(raw_stats.rms().value_or(0.0f)));
     return 0;
 }

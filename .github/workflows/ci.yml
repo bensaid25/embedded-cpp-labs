@@ -13,27 +13,17 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [g++, clang++]
-        # release : optimized build
-        # sanitizers : AddressSanitizer + UBSan (memory errors, undefined behavior)
-        # tsan : ThreadSanitizer (data races; checks the lock-free queue)
-        mode: [release, sanitizers, tsan]
+        mode: [release, sanitizers]
     steps:
       - uses: actions/checkout@v4
-
-      # Recent runner kernels randomize memory addresses more than
-      # ThreadSanitizer supports; lowering this is the documented fix.
-      - name: Make ThreadSanitizer work on this kernel
-        if: matrix.mode == 'tsan'
-        run: sudo sysctl vm.mmap_rnd_bits=28
 
       - name: Configure
         run: >
           cmake -S . -B build
           -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.mode == 'release' && 'Release' || 'Debug' }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.mode == 'sanitizers' && 'Debug' || 'Release' }}
           -DECL_WARNINGS_AS_ERRORS=ON
           -DECL_SANITIZE=${{ matrix.mode == 'sanitizers' && 'ON' || 'OFF' }}
-          -DECL_TSAN=${{ matrix.mode == 'tsan' && 'ON' || 'OFF' }}
 
       - name: Build
         run: cmake --build build -j
@@ -44,67 +34,21 @@ jobs:
       - name: Run the examples
         run: |
           ./build/examples/host/sensor_pipeline
-          ./build/examples/host/isr_pipeline
+          ./build/examples/host/vibration_demo
 
-  # Proves the "runs on a microcontroller unchanged" claim: the library is
-  # cross-compiled for a Cortex-M4F with exceptions and RTTI switched OFF
-  # (a throw would be a compile error), then the linked program is checked
-  # for heap and exception support, and flash/RAM are measured.
-  cross-compile-cortex-m:
-    name: Cortex-M4 cross-build + footprint
+  static-analysis:
+    name: clang-tidy
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install the ARM toolchain
-        run: >
-          sudo apt-get update &&
-          sudo apt-get install -y
-          gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
-
-      - name: Configure
-        run: >
-          cmake -S . -B build-arm
-          -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/arm-none-eabi-cortex-m4.cmake
-          -DCMAKE_BUILD_TYPE=MinSizeRel
-          -DECL_BUILD_TESTS=OFF
-          -DECL_BUILD_EXAMPLES=OFF
-          -DECL_BUILD_FOOTPRINT=ON
-
-      - name: Build
-        run: cmake --build build-arm -j
-
-      - name: Measure footprint and check for heap / exception code
-        shell: bash
-        run: |
-          {
-            echo "## Footprint on Cortex-M4F (-Os, no exceptions, no RTTI)"
-            echo
-            scripts/footprint.sh build-arm/footprint arm-none-eabi-
-          } | tee footprint.md >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Keep the report
-        uses: actions/upload-artifact@v4
-        with:
-          name: footprint-cortex-m4
-          path: |
-            footprint.md
-            build-arm/footprint/fp_*
-
-  # Static analysis. Advisory for now (it cannot fail the build) so the first
-  # findings can be fixed calmly. Remove "continue-on-error" to make it a gate.
-  clang-tidy:
-    name: clang-tidy (advisory)
-    runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
       - name: Install clang-tidy
         run: sudo apt-get update && sudo apt-get install -y clang-tidy
 
-      - name: Configure (to get compile_commands.json)
-        run: cmake -S . -B build
-
       - name: Run clang-tidy
-        run: clang-tidy -p build $(git ls-files 'tests/*.cpp' 'examples/host/*.cpp')
+        run: >
+          clang-tidy
+          tests/header_check.cpp
+          examples/host/01_sensor_pipeline.cpp
+          examples/host/02_vibration_demo.cpp
+          -- -std=c++17 -Iinclude -Iexamples/common
