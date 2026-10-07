@@ -1,0 +1,4 @@
+# Tests and examples dereference optionals right after asserting on them.
+# The strict check stays on for the library headers (see the root file).
+InheritParentConfig: true
+Checks: '-bugprone-unchecked-optional-access'
